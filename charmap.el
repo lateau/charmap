@@ -1,16 +1,17 @@
-;;; charmap-lite.el --- Unicode table for Emacs
+;;; charmap.el --- Unicode table for Emacs
 
 ;; Author: Daehyub Kim <lateau@gmail.com>
 ;; Created: 25 Mar 2013
 ;; Keywords: unicode
 ;; Version: devel
-;; URL: https://github.com/lateau/charmap-lite
+;; URL: https://github.com/lateau/charmap
 
 ;; TODO:
 ;;   * should I include fixed-width font?
 ;;   * disable right-to-left
 ;;   * search mode (code)
 ;;   * ecb integration
+;;   * major mode
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -32,24 +33,24 @@
 ;;; Code:
 (require 'cl)
 
-(defgroup charmap-lite nil
+(defgroup charmap nil
   ""
-  :prefix "charmap-lite-"
+  :prefix "charmap-"
   :group 'applications)
 
-(defcustom charmap-lite-chars-per-line 10
+(defcustom charmap-chars-per-line 10
   "Character number per a line."
   :type 'integer
-  :group 'charmap-lite)
+  :group 'charmap)
 
-(defcustom charmap-lite-text-scale-adjust 2
+(defcustom charmap-text-scale-adjust 2
   "Text scale."
   :type 'integer
-  :group 'charmap-lite)
+  :group 'charmap)
 
-(defvar charmap-lite-bufname "*charmap*")
+(defvar charmap-bufname "*charmap*")
 
-(defvar charmap-lite-char-map
+(defvar charmap-char-map
   '(Aegean_Numbers (#x10100 #x1013F)
     Alchemical_Symbols (#x1F700 #x1F77F)
     Alphabetic_Presentation_Forms (#xFB00 #xFB4F)
@@ -271,78 +272,78 @@
     Yi_Syllables (#xA000 #xA48F)
     Yijing_Hexagram_Symbols (#x4DC0 #x4DFF)))
 
-(defun charmap-lite-forward ()
+(defun charmap-forward ()
   "Move to forward then display a character description."
   (interactive)
   (forward-thing 'whitespace 1)
-  (charmap-lite-describe-char))
+  (charmap-describe-char))
 
-(defun charmap-lite-backward ()
+(defun charmap-backward ()
   "Move to backward."
   (interactive)
   (backward-char 3)
   (forward-thing 'whitespace 1)
-  (charmap-lite-describe-char))
+  (charmap-describe-char))
 
-(defun charmap-lite-next-line ()
+(defun charmap-next-line ()
   (interactive)
   (next-line)
-  (charmap-lite-describe-char))
+  (charmap-describe-char))
 
-(defun charmap-lite-prev-line ()
+(defun charmap-prev-line ()
   (interactive)
   (previous-line)
-  (charmap-lite-describe-char))
+  (charmap-describe-char))
 
-(defun charmap-lite-describe-char ()
+(defun charmap-describe-char ()
   "Display description of a character at current point."
   (describe-char (point))
   (other-window -1))
 
-(defun charmap-lite-copy-char ()
+(defun charmap-copy-char ()
   "Copy a character on current point."
   (interactive)
   (kill-ring-save (point) (+ (point) 1))
   (message "Copied to kill-ring"))
 
-(defvar charmap-lite-keymap
+(defvar charmap-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-f") 'charmap-lite-forward)
-    (define-key map (kbd "C-b") 'charmap-lite-backward)
-    (define-key map (kbd "C-n") 'charmap-lite-next-line)
-    (define-key map (kbd "C-p") 'charmap-lite-prev-line)
-    (define-key map (kbd "RET") 'charmap-lite-copy-char)
+    (define-key map (kbd "C-f") 'charmap-forward)
+    (define-key map (kbd "C-b") 'charmap-backward)
+    (define-key map (kbd "C-n") 'charmap-next-line)
+    (define-key map (kbd "C-p") 'charmap-prev-line)
+    (define-key map (kbd "RET") 'charmap-copy-char)
     map))
 
-(defun charmap-lite-get-blocks ()
+(defun charmap-get-blocks ()
   "Retrieve all usable unicode blocks."
-  (remove nil (map 'list #'(lambda (x) (and (symbolp x) x)) charmap-lite-char-map)))
+  (remove nil (map 'list #'(lambda (x) (and (symbolp x) x)) charmap-char-map)))
 
-(defmacro charmap-lite-print-chars (start end)
+(defmacro charmap-print-chars (start end)
   "Print characters from start to end."
   `(do ((c ,start (+ c 1))
         (i 1 (+ i 1)))
        ((> c ,end) nil)
      (insert-char c 1)
-     (if (> i (- charmap-lite-chars-per-line 1))
+     (if (> i (- charmap-chars-per-line 1))
          (progn
            (insert-char ?\n 1)
            (setq i 0))
        (insert-char ?\s 1))))
 
-(defun charmap-lite-print (unicode-block)
+(defun charmap-print (unicode-block)
   "Retrieve a unicode block and prepare for printing the block to buffer."
-  (let ((data (getf charmap-lite-char-map unicode-block)))
+  (let ((data (getf charmap-char-map unicode-block)))
     (if data
-        (charmap-lite-print-chars (first data) (second data))
+        (charmap-print-chars (first data) (second data))
       (error (format "Unicode block '%s' can't be found." (symbol-name unicode-block))))))
 
 (defun charmap ()
   "Display a specified unicode block."
   (interactive)
-  (let ((unicode-block (intern (completing-read "Select a unicode block: " (map 'list #'(lambda(x) (symbol-name x)) (charmap-lite-get-blocks)))))
-        (buf (get-buffer-create charmap-lite-bufname))
-        (bufname charmap-lite-bufname))
+  (let ((unicode-block (intern (completing-read "Select a unicode block: " (map 'list #'(lambda(x) (symbol-name x)) (charmap-get-blocks)))))
+        (buf (get-buffer-create charmap-bufname))
+        (bufname charmap-bufname))
     (with-current-buffer bufname
       (delete-other-windows)
       (split-window)
@@ -350,31 +351,33 @@
       (switch-to-buffer bufname)
       (setq buffer-read-only nil)
       (erase-buffer)
-      (text-scale-set charmap-lite-text-scale-adjust)
-      (charmap-lite-print unicode-block)
+      (text-scale-set charmap-text-scale-adjust)
+      (charmap-print unicode-block)
       (beginning-of-buffer)
       (setq buffer-read-only t)
-      (use-local-map charmap-lite-keymap)
+      (use-local-map charmap-keymap)
       (font-lock-mode t))))
 
 (defun charmap-all ()
   "Display entire unicode table."
   (interactive)
-  (let ((buf (get-buffer-create charmap-lite-bufname))
-        (bufname charmap-lite-bufname))
+  (let ((buf (get-buffer-create charmap-bufname))
+        (bufname charmap-bufname))
     (with-current-buffer bufname
       (delete-other-windows)
       (split-window)
       (other-window -1)
       (switch-to-buffer bufname)
       (setq buffer-read-only nil)
-      (text-scale-set charmap-lite-text-scale-adjust)
+      (text-scale-set charmap-text-scale-adjust)
       (erase-buffer)
-      (dolist (unicode-block (charmap-lite-get-blocks))
-        (charmap-lite-print unicode-block)
+      (dolist (unicode-block (charmap-get-blocks))
+        (charmap-print unicode-block)
         (delete-backward-char 1)
         (insert "\n\n"))
       (beginning-of-buffer)
       (setq buffer-read-only t)
-      (use-local-map charmap-lite-keymap)
+      (use-local-map charmap-keymap)
       (font-lock-mode t))))
+
+(provide 'charmap)
