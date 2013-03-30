@@ -6,6 +6,8 @@ CharMap
 CharMap is unicode table viewer for Emacs.
 With CharMap you can see the unicode table based on The Unicode Standard 6.2.
 
+You can install CharMap via http://marmalade-repo.org/
+
 ## How to use?
 
 CharMap is really simple to use.
