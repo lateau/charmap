@@ -43,9 +43,9 @@ Here are customizable variables.
 
 ## What is not be done
 
-- [ ] simple mode using minibuffer instead using describe-char
-- [ ] search mode (by code)
-- [ ] ecb integration
-- [ ] major mode
-- [ ] doesn't work well with (set-fontset-font nil 'japanese-jisx0208 ...)
-- [ ] font selector
+* simple mode using minibuffer instead using describe-char
+* search mode (by code)
+* ecb integration
+* major mode
+* doesn't work well with (set-fontset-font nil 'japanese-jisx0208 ...)
+* font selector
