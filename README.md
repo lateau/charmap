@@ -41,7 +41,7 @@ Here are customizable variables.
   :group 'charmap)
 ```
 
-## What is not be done
+## TODO
 
 * simple mode using minibuffer instead using describe-char
 * search mode (by code)
