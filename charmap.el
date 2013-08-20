@@ -12,14 +12,6 @@
 ;;   * C-f / C-b / C-n / C-p to navigate blocks.
 ;;   * Enter RET will copy a current character to kill-ring.
 
-;; TODO:
-;;   * simple mode using minibuffer instead using describe-char
-;;   * search mode (code)
-;;   * ecb integration
-;;   * major mode
-;;   * doesn't work well with (set-fontset-font nil 'japanese-jisx0208 ...)
-;;   * font selector
-
 ;; This file is NOT part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or
