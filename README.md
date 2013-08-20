@@ -42,12 +42,3 @@ Here are customizable variables.
   "Font lock face used to *charmap* buffer."
   :group 'charmap)
 ```
-
-## TODO
-
-* simple mode using minibuffer instead using describe-char
-* search mode (by code)
-* ecb integration
-* major mode
-* doesn't work well with (set-fontset-font nil 'japanese-jisx0208 ...)
-* font selector
