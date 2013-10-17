@@ -38,7 +38,7 @@
   :group 'applications)
 
 (defcustom charmap-rollback-cursor nil
-  "Move cursor to other window after charmap-describe-char."
+  "Turn on the force mode to move cursor back to charmap buffer window."
   :type 'symbol
   :group 'charmap)
 
@@ -336,9 +336,8 @@
 (defun charmap-print (unicode-block)
   "Retrieve a unicode block and prepare for printing the block to buffer."
   (let ((data (getf charmap-char-map unicode-block)))
-    (if data
-        (charmap-print-chars (first data) (second data))
-      (error (format "Unicode block '%s' can't be found." (symbol-name unicode-block))))))
+    (and data
+         (charmap-print-chars (first data) (second data)))))
 
 (defmacro with-charmap-buffer (body)
   `(let ((buf (get-buffer-create charmap-bufname))
@@ -364,8 +363,10 @@
   "Display a specified unicode block."
   (interactive)
   (let ((unicode-block (intern (substitute ?_ ?\s (completing-read "Select a unicode block: " (map 'list #'(lambda(x) (substitute ?\s ?_ (symbol-name x))) (charmap-get-blocks)))))))
-    (with-charmap-buffer
-     (charmap-print unicode-block))))
+    (if (getf charmap-char-map unicode-block)
+        (with-charmap-buffer
+         (charmap-print unicode-block))
+      (error (format "Unicode block '%s' couldn't be found." (symbol-name unicode-block))))))
 
 (defun charmap-all ()
   "Display entire unicode table."
