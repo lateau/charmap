@@ -58,6 +58,8 @@
 
 (defvar charmap-bufname "*charmap*")
 
+(defconst charmap-usage "Usage: C-f / C-b / C-n / C-p / RET - killring")
+
 (defconst charmap-char-map
   '(Aegean_Numbers (#x10100 #x1013F)
     Alchemical_Symbols (#x1F700 #x1F77F)
@@ -339,7 +341,7 @@
     (and data
          (charmap-print-chars (first data) (second data)))))
 
-(defmacro with-charmap-buffer (body)
+(defmacro with-charmap-buffer (&rest body)
   `(let ((buf (get-buffer-create charmap-bufname))
          (bufname charmap-bufname))
      (with-current-buffer bufname
@@ -353,11 +355,12 @@
        (text-scale-set charmap-text-scale-adjust)
        (setq buffer-face-mode-face 'charmap-face)
        (buffer-face-mode)
-       ,body
+       ,@body
        (beginning-of-buffer)
        (setq buffer-read-only t)
        (use-local-map charmap-keymap)
-       (font-lock-mode t))))
+       (font-lock-mode t)
+       (message charmap-usage))))
 
 (defun charmap ()
   "Display a specified unicode block."
