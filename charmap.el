@@ -47,11 +47,6 @@
   :type 'integer
   :group 'charmap)
 
-(defcustom charmap-enable-simple nil
-  "Display a result in minibuffer"
-  :type 'symbol
-  :group 'charmap)
-
 (defface charmap-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
   "Font lock face used to *charmap* buffer."
   :group 'charmap)
@@ -306,8 +301,10 @@
 
 (defun charmap-describe-char ()
   "Display description of a character at current point."
+  ;; (kill-ring-save (point) (+ (point) 1))
   (describe-char (point))
-  (and charmap-rollback-cursor (other-window -1)))
+  (if (equal (current-buffer) (get-buffer "*Help*"))
+      (other-window -1)))
 
 (defun charmap-copy-char ()
   "Copy a character on current point."
