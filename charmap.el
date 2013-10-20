@@ -8,9 +8,9 @@
 
 ;; How to use:
 ;;   * M-x charmap to display a unicode block.
-;;   * M-x charmap-all to display entire unicode blocks but you should be careful it's slow.
-;;   * C-f / C-b / C-n / C-p to navigate blocks.
-;;   * Enter RET will copy a current character to kill-ring.
+;;   * M-x charmap-all to display entire unicode blocks but it's slow.
+;;   * C-f / C-b / C-n / C-p to navigate the characters.
+;;   * RET will copy a character on current cursor to kill-ring.
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -30,15 +30,14 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
-(require 'cl)
 
 (defgroup charmap nil
-  ""
+  "charmap"
   :prefix "charmap-"
   :group 'applications)
 
-(defcustom charmap-rollback-cursor nil
-  "Turn on the force mode to move cursor back to charmap buffer window."
+(defcustom charmap-enable-simple nil
+  "Display a result in minibuffer"
   :type 'symbol
   :group 'charmap)
 
@@ -53,7 +52,9 @@
 
 (defvar charmap-bufname "*charmap*")
 
-(defconst charmap-usage "Usage: C-f / C-b / C-n / C-p / RET - killring")
+(defconst charmap-describe-char-bufname "*Help*")
+
+(defconst charmap-usage "Usage: C-f / C-b / C-n / C-p / RET: killring / q: quit")
 
 (defconst charmap-char-map
   '(Aegean_Numbers (#x10100 #x1013F)
@@ -301,9 +302,8 @@
 
 (defun charmap-describe-char ()
   "Display description of a character at current point."
-  ;; (kill-ring-save (point) (+ (point) 1))
   (describe-char (point))
-  (if (equal (current-buffer) (get-buffer "*Help*"))
+  (if (equal (current-buffer) (get-buffer charmap-describe-char-bufname))
       (other-window -1)))
 
 (defun charmap-copy-char ()
@@ -312,6 +312,13 @@
   (kill-ring-save (point) (+ (point) 1))
   (message "Copied to kill-ring"))
 
+(defun charmap-delete-buffers ()
+  (interactive)
+  (and (get-buffer-window charmap-describe-char-bufname)
+       (delete-window (get-buffer-window charmap-describe-char-bufname)))
+  (and (get-buffer-window charmap-bufname)
+       (delete-window (get-buffer-window charmap-bufname))))
+
 (defvar charmap-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-f") 'charmap-forward)
@@ -319,6 +326,8 @@
     (define-key map (kbd "C-n") 'charmap-next-line)
     (define-key map (kbd "C-p") 'charmap-prev-line)
     (define-key map (kbd "RET") 'charmap-copy-char)
+    (define-key map (kbd "s") 'charmap-search)
+    (define-key map (kbd "q") 'charmap-delete-buffers)
     map))
 
 (defun charmap-get-blocks ()
@@ -334,7 +343,7 @@
 
 (defun charmap-print (unicode-block)
   "Retrieve a unicode block and prepare for printing the block to buffer."
-  (let ((data (getf charmap-char-map unicode-block)))
+  (let ((data (plist-get charmap-char-map unicode-block)))
     (and data
          (charmap-print-chars (first data) (second data)))))
 
@@ -363,7 +372,7 @@
   "Display a specified unicode block."
   (interactive)
   (let ((unicode-block (intern (substitute ?_ ?\s (completing-read "Select a unicode block: " (map 'list #'(lambda(x) (substitute ?\s ?_ (symbol-name x))) (charmap-get-blocks)))))))
-    (if (getf charmap-char-map unicode-block)
+    (if (plist-get charmap-char-map unicode-block)
         (with-charmap-buffer
          (charmap-print unicode-block))
       (error (format "Unicode block '%s' couldn't be found." (symbol-name unicode-block))))))

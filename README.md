@@ -23,19 +23,9 @@ and it takes a little time.
 Here are customizable variables.
 
 ```cl
-(defcustom charmap-rollback-cursor nil
-  "Move cursor to other window after charmap-describe-char."
-  :type 'symbol
-  :group 'charmap)
-
 (defcustom charmap-text-scale-adjust 4
   "Text scale."
   :type 'integer
-  :group 'charmap)
-
-(defcustom charmap-enable-simple nil
-  "Display a result in minibuffer"
-  :type 'symbol
   :group 'charmap)
 
 (defface charmap-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
