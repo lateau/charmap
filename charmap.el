@@ -3,7 +3,7 @@
 ;; Author: Daehyub Kim <lateau@gmail.com>
 ;; Created: 25 Mar 2013
 ;; Keywords: unicode character ucs
-;; Version: 0.0.0
+;; Version: 0.0.1
 ;; URL: https://github.com/lateau/charmap
 
 ;; How to use:
