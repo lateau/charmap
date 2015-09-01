@@ -386,7 +386,6 @@
      (delete-backward-char 1)
      (insert "\n\n"))))
 
-;;;###autoload
 
 (provide 'charmap)
 
