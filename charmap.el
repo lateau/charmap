@@ -368,6 +368,8 @@
        (font-lock-mode t)
        (message charmap-usage))))
 
+
+;;;###autoload
 (defun charmap ()
   "Display a specified unicode block."
   (interactive)
@@ -377,6 +379,8 @@
          (charmap-print unicode-block))
       (error (format "Unicode block '%s' couldn't be found." (symbol-name unicode-block))))))
 
+
+;;;###autoload
 (defun charmap-all ()
   "Display entire unicode table."
   (interactive)
