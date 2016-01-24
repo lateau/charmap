@@ -52,6 +52,10 @@
 
 (defvar charmap-bufname "*charmap*")
 
+(defface charmap-onechar-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
+  "Popup tooltip face."
+  :group 'charmap)
+
 (defconst charmap-describe-char-bufname "*Help*")
 
 (defconst charmap-usage "Usage: C-f / C-b / C-n / C-p / RET: killring / q: quit")
@@ -312,6 +316,15 @@
   (kill-ring-save (point) (+ (point) 1))
   (message "Copied to kill-ring"))
 
+(defun charmap-zoom-char-at-point (&optional height position) ; Not bound by default.
+  "Show the Unicode char at point in a zoomed tooltip.
+With a numerical prefix arg, show it that many times larger.
+Non-nil POSITION means use the character at POSITION."
+  (interactive (list (and current-prefix-arg  (prefix-numeric-value current-prefix-arg))))
+  (unless height (setq height  1))
+  (let ((new-face `(:foreground "red" :height ,(* 200 height) :inherit 'charmap-onechar-face)))
+    (x-show-tip (propertize (char-to-string (char-after position)) 'face new-face))))
+
 (defun charmap-delete-buffers ()
   (interactive)
   (and (get-buffer-window charmap-describe-char-bufname)
@@ -328,6 +341,7 @@
     (define-key map (kbd "RET") 'charmap-copy-char)
     (define-key map (kbd "s") 'charmap-search)
     (define-key map (kbd "q") 'charmap-delete-buffers)
+    (define-key map (kbd "z") 'charmap-zoom-char-at-point)
     map))
 
 (defun charmap-get-blocks ()
