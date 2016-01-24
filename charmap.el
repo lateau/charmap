@@ -332,20 +332,18 @@
 
 (defun charmap-get-blocks ()
   "Retrieve all usable unicode blocks."
-  (remove nil (map 'list #'(lambda (x) (and (symbolp x) x)) charmap-char-map)))
+  (delete nil (mapcar #'(lambda (x) (when (symbolp x) x)) charmap-char-map)))
 
-(defmacro charmap-print-chars (start end)
+(defun charmap-print-chars (start-incl end-incl)
   "Print characters from start to end."
-  `(do ((c ,start (+ c 1))
-        (i 1 (+ i 1)))
-       ((> c ,end) nil)
-     (insert-char c 1)))
+  (dolist (ch (number-sequence start-incl end-incl))
+    (insert-char ch 1)))
 
 (defun charmap-print (unicode-block)
   "Retrieve a unicode block and prepare for printing the block to buffer."
   (let ((data (plist-get charmap-char-map unicode-block)))
     (and data
-         (charmap-print-chars (first data) (second data)))))
+         (apply 'charmap-print-chars data))))
 
 (defmacro with-charmap-buffer (&rest body)
   `(let ((buf (get-buffer-create charmap-bufname))
@@ -368,15 +366,20 @@
        (font-lock-mode t)
        (message charmap-usage))))
 
+
+;;;###autoload
 (defun charmap ()
   "Display a specified unicode block."
   (interactive)
-  (let ((unicode-block (intern (substitute ?_ ?\s (completing-read "Select a unicode block: " (map 'list #'(lambda(x) (substitute ?\s ?_ (symbol-name x))) (charmap-get-blocks)))))))
+  (let* ((blocks (mapcar #'(lambda(x) (subst-char-in-string ?_ ?\s (symbol-name x))) (charmap-get-blocks)))
+         (unicode-block (intern-soft (subst-char-in-string ?\s ?_ (completing-read "Select a unicode block: " blocks)))))
     (if (plist-get charmap-char-map unicode-block)
         (with-charmap-buffer
          (charmap-print unicode-block))
       (error (format "Unicode block '%s' couldn't be found." (symbol-name unicode-block))))))
 
+
+;;;###autoload
 (defun charmap-all ()
   "Display entire unicode table."
   (interactive)
@@ -386,7 +389,6 @@
      (delete-backward-char 1)
      (insert "\n\n"))))
 
-;;;###autoload
 
 (provide 'charmap)
 
