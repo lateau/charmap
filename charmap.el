@@ -322,7 +322,7 @@ With a numerical prefix arg, show it that many times larger.
 Non-nil POSITION means use the character at POSITION."
   (interactive (list (and current-prefix-arg  (prefix-numeric-value current-prefix-arg))))
   (unless height (setq height  1))
-  (let ((new-face `(:foreground "red" :height ,(* 200 height) :inherit 'charmap-onechar-face)))
+  (let ((new-face `(:foreground "red" :height ,(* 200 height) :inherit charmap-onechar-face)))
     (x-show-tip (propertize (char-to-string (char-after position)) 'face new-face))))
 
 (defun charmap-delete-buffers ()
