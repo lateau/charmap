@@ -6,7 +6,7 @@ CharMap
 CharMap is unicode table viewer for Emacs.
 With CharMap you can see the unicode table based on The Unicode Standard 6.2.
 
-You can install CharMap via http://marmalade-repo.org/
+Newest CharMap is available on MELPA.
 
 ## How to use?
 
@@ -17,6 +17,16 @@ To see all unicode blocks, try to M-x charmap-all but the entire blocks are so h
 and it takes a little time.
 
 ![alt text](https://raw.github.com/lateau/charmap/gh-pages/images/charmap.png "")
+
+### Keybindings
+
+* C-f: forward
+* C-b: backward
+* C-n: next line
+* C-p: previous line
+* RET: copy a character that current cursor's on
+* z: zoom(tooltip)
+* s: search(NYI)
 
 ## Customization
 

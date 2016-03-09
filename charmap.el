@@ -1,9 +1,9 @@
 ;;; charmap.el --- Unicode table for Emacs
 
-;; Author: Daehyub Kim <lateau@gmail.com>
+;; Author: Anan Mikami <lateau@gmail.com>
 ;; Created: 25 Mar 2013
 ;; Keywords: unicode character ucs
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; URL: https://github.com/lateau/charmap
 
 ;; How to use:
