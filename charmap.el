@@ -41,6 +41,11 @@
   :type 'integer
   :group 'charmap)
 
+(defcustom charmap-newline-period 48
+  "If greater than zero, the number of Unicode characters after which a newline should be printed."
+  :type 'integer
+  :group 'charmap)
+
 (defface charmap-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
   "Font lock face used to *charmap* buffer."
   :group 'charmap)
@@ -436,6 +441,12 @@ Non-nil POSITION means use the character at POSITION."
 (defun charmap-print-chars (start-incl end-incl)
   "Print characters from start to end."
   (dolist (ch (number-sequence start-incl end-incl))
+    (if (let ((ii (- ch start-incl)))
+          (and (> ii 0)  ;; we do not want an initial newline
+               (integerp charmap-newline-period)
+               (> charmap-newline-period 0)
+               (= (mod ii charmap-newline-period) 0)))
+        (insert-char 10))  ;; Newline. FIXME: it is selectable.
     (insert-char ch 1)))
 
 (defun charmap-print (unicode-block)
