@@ -477,7 +477,9 @@ Non-nil POSITION means use the character at POSITION."
   "Display a specified unicode block."
   (interactive)
   (let* ((blocks (mapcar #'(lambda(x) (subst-char-in-string ?_ ?\s (symbol-name x))) (charmap-get-blocks)))
-         (unicode-block (intern-soft (subst-char-in-string ?\s ?_ (completing-read "Select a unicode block: " blocks)))))
+         (unicode-block (intern-soft (subst-char-in-string ?\s ?_
+                                                           (let ((completion-ignore-case t))
+                                                             (completing-read "Select a unicode block: " blocks))))))
     (if (plist-get charmap-char-map unicode-block)
         (with-charmap-buffer
          (charmap-print unicode-block))
