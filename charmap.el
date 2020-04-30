@@ -394,6 +394,7 @@
 
 (defun charmap-describe-char ()
   "Display description of a character at current point."
+  (interactive)
   (describe-char (point))
   (if (equal (current-buffer) (get-buffer charmap-describe-char-bufname))
       (other-window -1)))
@@ -422,6 +423,7 @@ Non-nil POSITION means use the character at POSITION."
 
 (defvar charmap-keymap
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "?") 'charmap-describe-char)
     (define-key map (kbd "C-f") 'charmap-forward)
     (define-key map (kbd "C-b") 'charmap-backward)
     (define-key map (kbd "C-n") 'charmap-next-line)
