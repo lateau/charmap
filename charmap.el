@@ -36,11 +36,6 @@
   :prefix "charmap-"
   :group 'applications)
 
-(defcustom charmap-enable-simple nil
-  "Display a result in minibuffer"
-  :type 'symbol
-  :group 'charmap)
-
 (defcustom charmap-text-scale-adjust 4
   "Text scale."
   :type 'integer
