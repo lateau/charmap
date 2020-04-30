@@ -52,6 +52,9 @@
 
 (defvar charmap-bufname "*charmap*")
 
+(defvar charmap-block-history-list nil
+  "List of all Unicode blocks that the user has visited.")
+
 (defface charmap-onechar-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
   "Popup tooltip face."
   :group 'charmap)
@@ -483,9 +486,11 @@ Non-nil POSITION means use the character at POSITION."
   "Display a specified unicode block."
   (interactive)
   (let* ((blocks (mapcar #'(lambda(x) (subst-char-in-string ?_ ?\s (symbol-name x))) (charmap-get-blocks)))
-         (unicode-block (intern-soft (subst-char-in-string ?\s ?_
-                                                           (let ((completion-ignore-case t))
-                                                             (completing-read "Select a unicode block: " blocks))))))
+         (unicode-block
+          (intern-soft
+           (subst-char-in-string
+            ?\s ?_ (let ((completion-ignore-case t))
+                     (completing-read "Select a unicode block: " blocks nil nil nil 'charmap-block-history-list))))))
     (if (plist-get charmap-char-map unicode-block)
         (with-charmap-buffer
          (charmap-print unicode-block))
