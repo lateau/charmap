@@ -373,6 +373,7 @@ Non-nil POSITION means use the character at POSITION."
        (text-scale-set charmap-text-scale-adjust)
        (setq buffer-face-mode-face 'charmap-face)
        (buffer-face-mode)
+       (setq truncate-lines nil)
        ,@body
        (beginning-of-buffer)
        (setq buffer-read-only t)
