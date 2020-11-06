@@ -1,4 +1,5 @@
 [![MELPA](http://melpa.org/packages/charmap-badge.svg)](http://melpa.org/#/charmap)
+[![MELPA Stable](https://stable.melpa.org/packages/charmap-badge.svg)](https://stable.melpa.org/#/charmap)
 
 ## What is CharMap?
 
