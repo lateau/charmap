@@ -36,13 +36,13 @@
   :prefix "charmap-"
   :group 'applications)
 
-(defcustom charmap-enable-simple nil
-  "Display a result in minibuffer"
-  :type 'symbol
-  :group 'charmap)
-
 (defcustom charmap-text-scale-adjust 4
   "Text scale."
+  :type 'integer
+  :group 'charmap)
+
+(defcustom charmap-newline-period 48
+  "If greater than zero, the number of Unicode characters after which a newline should be printed."
   :type 'integer
   :group 'charmap)
 
@@ -51,6 +51,9 @@
   :group 'charmap)
 
 (defvar charmap-bufname "*charmap*")
+
+(defvar charmap-block-history-list nil
+  "List of all Unicode blocks that the user has visited.")
 
 (defface charmap-onechar-face '((t (:family "dejavu sans" :weight normal :slant normal :underline nil)))
   "Popup tooltip face."
@@ -394,6 +397,7 @@
 
 (defun charmap-describe-char ()
   "Display description of a character at current point."
+  (interactive)
   (describe-char (point))
   (if (equal (current-buffer) (get-buffer charmap-describe-char-bufname))
       (other-window -1)))
@@ -422,6 +426,7 @@ Non-nil POSITION means use the character at POSITION."
 
 (defvar charmap-keymap
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "?") 'charmap-describe-char)
     (define-key map (kbd "C-f") 'charmap-forward)
     (define-key map (kbd "C-b") 'charmap-backward)
     (define-key map (kbd "C-n") 'charmap-next-line)
@@ -439,6 +444,12 @@ Non-nil POSITION means use the character at POSITION."
 (defun charmap-print-chars (start-incl end-incl)
   "Print characters from start to end."
   (dolist (ch (number-sequence start-incl end-incl))
+    (if (let ((ii (- ch start-incl)))
+          (and (> ii 0)  ;; we do not want an initial newline
+               (integerp charmap-newline-period)
+               (> charmap-newline-period 0)
+               (= (mod ii charmap-newline-period) 0)))
+        (insert-char 10))  ;; Newline. FIXME: it is selectable.
     (insert-char ch 1)))
 
 (defun charmap-print (unicode-block)
@@ -475,7 +486,11 @@ Non-nil POSITION means use the character at POSITION."
   "Display a specified unicode block."
   (interactive)
   (let* ((blocks (mapcar #'(lambda(x) (subst-char-in-string ?_ ?\s (symbol-name x))) (charmap-get-blocks)))
-         (unicode-block (intern-soft (subst-char-in-string ?\s ?_ (completing-read "Select a unicode block: " blocks)))))
+         (unicode-block
+          (intern-soft
+           (subst-char-in-string
+            ?\s ?_ (let ((completion-ignore-case t))
+                     (completing-read "Select a unicode block: " blocks nil nil nil 'charmap-block-history-list))))))
     (if (plist-get charmap-char-map unicode-block)
         (with-charmap-buffer
          (charmap-print unicode-block))
